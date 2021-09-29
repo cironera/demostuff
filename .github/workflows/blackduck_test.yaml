@@ -21,22 +21,28 @@ env:
   APPLICATION_PQDN: hello-kubernetes  # as in hello-kubernetes.lemans-sandbox.rockwellautomation.com
   HELM_TIMEOUT: 600s
   REPO_REF: ${{ github.ref }}
+  BUILD_VERSION: $GITHUB_ACTOR
+  GIT_DISCOVERY_ACROSS_FILESYSTEM: true
 
 jobs:
   duckify:
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Extract build version
         shell: bash
-        run: echo "::set-output name=TOOG::$(echo $VERSION)"
-        id: extract_build_version
+        run: echo "::set-output name=tag::$(git describe --abbrev=0 --tags)"
+        id: extract_last_tag
 
       - name: Extract version main
         if: env.REPO_REF == 'refs/heads/main' ||
               env.REPO_REF == 'refs/heads/master'
         shell: bash
-        run: echo "##[set-output name=version;]$(echo ${REPO_REF#refs/heads/}_${BUILD_VERSION})"
+        run: echo "##[set-output name=version;]$(echo ${REPO_REF#refs/heads/}_${{ steps.extract_last_tag.outputs.tag }})"
         id: extract_version_main
 
       - name: Extract version release
@@ -57,6 +63,6 @@ jobs:
         shell: bash
         run: |
           echo "Version1 is:" ${{ steps.extract_version_main.outputs.version }}${{ steps.extract_version_release.outputs.version }}${{ steps.extract_version_dev.outputs.version }}
-          echo "Version2 is:" "${{ steps.extract_build_version.outputs.TOOG}}"
+          echo "Version2 is:" "${{ steps.extract_last_tag.outputs.tag}}"
           echo "ref :" "${{ github.ref }}"
           echo "sha :" "${{ github.sha }}"
