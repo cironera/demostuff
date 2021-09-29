@@ -1,11 +1,15 @@
 name: Test Black Duck Scan
 
+
 on:
   push:
     branches:
       - '**'
     tags-ignore:
       - '**'
+
+env:
+  REPO_REF: ${{ github.ref }}
 
 jobs:
   duckify:
