@@ -21,10 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Extract build version
-        shell: bash
-        run: echo "::set-output name=tag::$(git tag)"
+      - name: Get Last tag
         id: extract_last_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: unknown
 
       - name: Extract version main
         if: env.REPO_REF == 'refs/heads/main' ||
