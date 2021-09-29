@@ -1,6 +1,5 @@
 name: Test Black Duck Scan
 
-
 on:
   push:
     branches:
@@ -8,27 +7,14 @@ on:
     tags-ignore:
       - '**'
 
-env:
-  DOCKER_FILE: "Dockerfile"
-  CONTAINER_PORT: 80
-  KUBERNETES_NAMESPACE: example
-  SECURITY_NAMESPACE: security
-  KUBERNETES_APP_NAME: hello-kubernetes
-  CONTAINER_REGISTRY_NAME: ghcr.io
-  HELM_CHART_RELATIVE_LOCATION: gitops/chart
-  TERRAFORM_TEMPLATES_RELATIVE_LOCATION: gitops/terraform
-  TERRAFORM_VERSION: 0.14.x
-  APPLICATION_PQDN: hello-kubernetes  # as in hello-kubernetes.lemans-sandbox.rockwellautomation.com
-  HELM_TIMEOUT: 600s
-  REPO_REF: ${{ github.ref }}
-  BUILD_VERSION: $GITHUB_ACTOR
-  GIT_DISCOVERY_ACROSS_FILESYSTEM: true
-
 jobs:
   duckify:
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Extract build version
         shell: bash
@@ -39,7 +25,7 @@ jobs:
         if: env.REPO_REF == 'refs/heads/main' ||
               env.REPO_REF == 'refs/heads/master'
         shell: bash
-        run: echo "##[set-output name=version;]$(echo ${REPO_REF#refs/heads/}_${{ steps.extract_last_tag.outputs.tag }})"
+        run: echo "##[set-output name=version;]$(echo ${REPO_REF#refs/heads/}_${{ steps.extract_last_tag.outputs.tag })"
         id: extract_version_main
 
       - name: Extract version release
