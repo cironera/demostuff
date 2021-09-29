@@ -1,0 +1,61 @@
+name: Test Black Duck Scan
+
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+env:
+  DOCKER_FILE: "Dockerfile"
+  CONTAINER_PORT: 80
+  KUBERNETES_NAMESPACE: example
+  SECURITY_NAMESPACE: security
+  KUBERNETES_APP_NAME: hello-kubernetes
+  CONTAINER_REGISTRY_NAME: ghcr.io
+  HELM_CHART_RELATIVE_LOCATION: gitops/chart
+  TERRAFORM_TEMPLATES_RELATIVE_LOCATION: gitops/terraform
+  TERRAFORM_VERSION: 0.14.x
+  APPLICATION_PQDN: hello-kubernetes  # as in hello-kubernetes.lemans-sandbox.rockwellautomation.com
+  HELM_TIMEOUT: 600s
+
+jobs:
+  duckify:
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract build version
+        shell: bash
+        run: echo "::set-output name=TOOG::$(echo $VERSION)"
+        id: extract_build_version
+
+      - name: Extract version main
+        if: env.REPO_REF == 'refs/heads/main' ||
+              env.REPO_REF == 'refs/heads/master'
+        shell: bash
+        run: echo "##[set-output name=version;]$(echo ${REPO_REF#refs/heads/}_${BUILD_VERSION})"
+        id: extract_version_main
+
+      - name: Extract version release
+        if: startsWith(env.REPO_REF, 'refs/heads/hotfix/') ||
+              startsWith(env.REPO_REF, 'refs/heads/release')
+        shell: bash
+        run: echo "##[set-output name=version;]release"
+        id: extract_version_release
+
+      - name: Extract version dev
+        if: startsWith(env.REPO_REF, 'refs/heads/develop') ||
+              startsWith(env.REPO_REF, 'refs/heads/feature/')
+        shell: bash
+        run: echo "##[set-output name=version;]develop"
+        id: extract_version_dev
+
+      - name: Check output
+        shell: bash
+        run: |
+          echo "Version1 is:" ${{ steps.extract_version_main.outputs.version }}${{ steps.extract_version_release.outputs.version }}${{ steps.extract_version_dev.outputs.version }}
+          echo "Version2 is:" "${{ steps.extract_build_version.outputs.TOOG}}"
+          echo "ref :" "${{ github.ref }}"
+          echo "sha :" "${{ github.sha }}"
