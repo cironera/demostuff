@@ -20,6 +20,7 @@ env:
   TERRAFORM_VERSION: 0.14.x
   APPLICATION_PQDN: hello-kubernetes  # as in hello-kubernetes.lemans-sandbox.rockwellautomation.com
   HELM_TIMEOUT: 600s
+  REPO_REF: ${{ github.ref }}
 
 jobs:
   duckify:
