@@ -22,7 +22,7 @@ jobs:
 
       - name: Extract build version
         shell: bash
-        run: echo "::set-output name=tag::$(git describe --abbrev=0 --tags)"
+        run: echo "::set-output name=tag::$(git tag)"
         id: extract_last_tag
 
       - name: Extract version main
