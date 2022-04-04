@@ -9,3 +9,5 @@ testing...
 | **DEVSECOPS** | MTTA   | 3 min  | 4 min  | 5 min | ^     |      |
 |               |        |        |        |       |       |      |
 |               |        |        |        |       |       |      |
+
+<p style='color:red'>This is some red text.</p>
