@@ -2,7 +2,7 @@
 catch-all repo for demo stuff
 testing...
 
-![alt text](yellow.png "Title")
+![alt text](yellow.jpg"Title")
 
 | Team          | Metric | Jan 22 | Feb 22 | SLA   | Trend | Note |
 |---------------|--------|--------|--------|-------|-------|------|
